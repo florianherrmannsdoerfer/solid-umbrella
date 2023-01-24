@@ -39,7 +39,7 @@ class Iolink extends utils.Adapter {
 
 		this.log.debug('IO-Link adapter - fetching data started');
 		if (endpoint && iolinkport) {
-			getData(endpoint, iolinkport);
+			await getData(endpoint, iolinkport, this);
 		} else {
 			this.log.error('IO-Link adapter - config incomplete!');
 			this.stop();
@@ -66,7 +66,7 @@ class Iolink extends utils.Adapter {
 
 }
 
-const getData = async (endpoint, iolinkport) => {
+const getData = async (endpoint, iolinkport, adapter) => {
 	try {
 		//sensor info and process data requests
 		let requestSensorData = getRequestBody(`/iolinkmaster/port[${iolinkport}]/iolinkdevice/pdin/getdata`);
