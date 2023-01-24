@@ -155,13 +155,8 @@ const getData = async (endpoint, iolinkport, adapter) => {
 
 		var idSensor = `${masterDeviceName}.${iolinkport}.${sensorName}`;
 
-		const json = require('./devices/device-spec.json'); //(with path)
-		var dummySpec = DeviceSpec.from(json);
+		generateChannelObject(`${masterDeviceName}.iolinkports`, 'IO-Link Ports', adapter)
 
-		generateChannelObject(`${masterDeviceName}.iolinkports`, 'IO-Link Ports')
-		await getPortData(endpoint, 1, `${masterDeviceName}.iolinkports`, null);
-		await getPortData(endpoint, 2, `${masterDeviceName}.iolinkports`, dummySpec);
-		//await getPortData(endpoint, 3, `${masterDeviceName}.iolinkports`);
 
 
 		adapter.setObjectNotExists(idSensor, {
@@ -422,19 +417,6 @@ const getData = async (endpoint, iolinkport, adapter) => {
 		adapter.setState(`${idIoLink}.vendorid`, vendorid, true);
 
 
-		adapter.setObjectNotExists(`${idIoLink}.sensorid`, {
-			type: 'state',
-			common: {
-				name: 'Sensor ID',
-				role: 'value',
-				type: 'string',
-				value: sensorid,
-				read: true,
-				write: false
-			}
-		});
-		adapter.setState(`${idIoLink}.sensorid`, sensorid, true);
-
 
 		let serialnumber = await getValue(endpoint, requestDeviceSn);
 
@@ -648,7 +630,7 @@ function getIdString(name) {
  * @param {string} id
  * @param {string} name
  */
-function generateChannelObject(id, name) {
+function generateChannelObject(id, name, adapter) {
 	//TODO: manuell prüfen ob channel schon existiert?
 	adapter.setObjectNotExists(id, {
 		type: 'channel',
@@ -663,8 +645,9 @@ function generateChannelObject(id, name) {
 /**
  * @param {string} id
  * @param {any} name
+ * @param adapter
  */
-function generateDeviceObject(id, name) {
+function generateDeviceObject(id, name, adapter) {
 	//TODO: manuell prüfen ob device schon existiert?
 	adapter.setObjectNotExists(id, {
 		type: 'device',
@@ -684,7 +667,7 @@ function generateDeviceObject(id, name) {
  * @param {string | number} value
  * @param {string} unit
  */
-function generateStateObject(id, name, role, type, value, unit = '') {
+function generateStateObject(id, name, role, type, value, unit = '', adapter) {
 	//TODO: manuell prüfen ob state schon existiert?
 	adapter.setObjectNotExists(id, {
 		type: 'state',
